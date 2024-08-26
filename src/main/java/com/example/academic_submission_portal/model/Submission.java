@@ -1,7 +1,6 @@
 package com.example.academic_submission_portal.model;
 
 import jakarta.persistence.*;
-import org.springframework.data.annotation.Id;
 
 import java.util.Date;
 
