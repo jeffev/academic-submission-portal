@@ -2,21 +2,23 @@ package com.example.academic_submission_portal.controller;
 
 import com.example.academic_submission_portal.model.Submission;
 import com.example.academic_submission_portal.service.SubmissionService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Controller;
 
 import jakarta.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.annotation.ManagedProperty;
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import java.io.Serializable;
 import java.util.List;
 
-@Controller
-@Scope("view")
+@ManagedBean(name = "submissionController")
+@ViewScoped
 public class SubmissionController implements Serializable {
 
-    @Autowired
+    private static final long serialVersionUID = 1L;
+
+    @ManagedProperty("#{submissionService}")
     private SubmissionService submissionService;
 
     private List<Submission> submissions;
@@ -34,7 +36,6 @@ public class SubmissionController implements Serializable {
             submissionService.save(newSubmission);
             submissions.add(newSubmission);
             newSubmission = new Submission();
-            // Inform the user about the success
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Submission saved successfully."));
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to save submission."));
@@ -85,5 +86,9 @@ public class SubmissionController implements Serializable {
 
     public void setNewSubmission(Submission newSubmission) {
         this.newSubmission = newSubmission;
+    }
+
+    public void setSubmissionService(SubmissionService submissionService) {
+        this.submissionService = submissionService;
     }
 }
