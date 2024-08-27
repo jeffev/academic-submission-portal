@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>Enviar Trabalho</title>
+</h:head>
+<h:body>
+    <h:form enctype="multipart/form-data">
+        <h:panelGrid columns="2">
+            <h:outputLabel for="title" value="Título:" />
+            <h:inputText id="title" value="#{submissionController.submission.title}" required="true" />
+
+            <h:outputLabel for="description" value="Descrição:" />
+            <h:inputTextarea id="description" value="#{submissionController.submission.description}" />
+
+            <h:outputLabel for="file" value="Arquivo:" />
+            <h:inputFile id="file" value="#{submissionController.file}" required="true" />
+
+            <h:outputLabel for="studentName" value="Nome do Estudante:" />
+            <h:inputText id="studentName" value="#{submissionController.submission.studentName}" required="true" />
+        </h:panelGrid>
+
+        <p:commandButton value="Enviar Trabalho" action="#{submissionController.upload}" update="@form">
+            <f:ajax execute="@form" />
+        </p:commandButton>
+    </h:form>
+
+    <h:messages />
+</h:body>
+</html>

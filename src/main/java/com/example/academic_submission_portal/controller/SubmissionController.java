@@ -1,94 +1,88 @@
 package com.example.academic_submission_portal.controller;
 
 import com.example.academic_submission_portal.model.Submission;
-import com.example.academic_submission_portal.service.SubmissionService;
+import com.example.academic_submission_portal.repository.SubmissionRepository;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
+import org.primefaces.model.file.UploadedFile;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import jakarta.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.annotation.ManagedProperty;
-import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
+import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
-@ManagedBean(name = "submissionController")
+@Named
 @ViewScoped
+@Component
 public class SubmissionController implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
-    @ManagedProperty("#{submissionService}")
-    private SubmissionService submissionService;
+    @Autowired
+    private SubmissionRepository submissionRepository;
 
+    private Submission submission = new Submission();
     private List<Submission> submissions;
-    private Submission selectedSubmission;
-    private Submission newSubmission;
+    private UploadedFile file;
 
-    @PostConstruct
-    public void init() {
-        submissions = submissionService.findAll();
-        newSubmission = new Submission();
-    }
-
-    public void saveSubmission() {
-        try {
-            submissionService.save(newSubmission);
-            submissions.add(newSubmission);
-            newSubmission = new Submission();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Submission saved successfully."));
-        } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to save submission."));
+    public void upload() {
+        if (file != null) {
+            submission.setFileData(file.getContent());
+            submission.setFileName(file.getFileName());
+            submission.setSubmissionDate(new Date());
+            submissionRepository.save(submission);
+            submissions = submissionRepository.findAll();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Trabalho enviado com sucesso"));
+            submission = new Submission(); // reset para nova submissão
+            file = null; // reset do arquivo
+        } else {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Por favor, selecione um arquivo", null));
         }
     }
 
-    public void editSubmission() {
-        try {
-            submissionService.update(selectedSubmission);
-            submissions = submissionService.findAll();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Submission updated successfully."));
-        } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to update submission."));
+
+    public void delete(Long id) {
+        Optional<Submission> optionalSubmission = submissionRepository.findById(id);
+        if (optionalSubmission.isPresent()) {
+            submissionRepository.deleteById(id);
+            submissions = submissionRepository.findAll();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Trabalho excluído com sucesso"));
+        } else {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Trabalho não encontrado", null));
         }
     }
 
-    public void deleteSubmission() {
-        try {
-            submissionService.delete(selectedSubmission.getId());
-            submissions.remove(selectedSubmission);
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Submission deleted successfully."));
-        } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to delete submission."));
-        }
+    public void loadSubmissions() {
+        submissions = submissionRepository.findAll();
     }
 
-    // Getters and Setters
+    public Submission getSubmission() {
+        return submission;
+    }
+
+    public void setSubmission(Submission submission) {
+        this.submission = submission;
+    }
 
     public List<Submission> getSubmissions() {
+        if (submissions == null) {
+            loadSubmissions();
+        }
         return submissions;
     }
 
-    public void setSubmissions(List<Submission> submissions) {
-        this.submissions = submissions;
+    public UploadedFile getFile() {
+        return file;
     }
 
-    public Submission getSelectedSubmission() {
-        return selectedSubmission;
-    }
-
-    public void setSelectedSubmission(Submission selectedSubmission) {
-        this.selectedSubmission = selectedSubmission;
-    }
-
-    public Submission getNewSubmission() {
-        return newSubmission;
-    }
-
-    public void setNewSubmission(Submission newSubmission) {
-        this.newSubmission = newSubmission;
-    }
-
-    public void setSubmissionService(SubmissionService submissionService) {
-        this.submissionService = submissionService;
+    public void setFile(UploadedFile file) {
+        this.file = file;
     }
 }
