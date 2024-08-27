@@ -1,32 +1,31 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="jakarta.faces.html"
-      xmlns:f="jakarta.faces.core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui">
 <h:head>
     <title>Enviar Trabalho</title>
 </h:head>
 <h:body>
     <h:form enctype="multipart/form-data">
-        <h:panelGrid columns="2">
-            <h:outputLabel for="title" value="Título:" />
-            <h:inputText id="title" value="#{submissionController.submission.title}" required="true" />
+        <p:panel header="Enviar Trabalho">
+            <h:panelGrid columns="2">
+                <h:outputLabel for="title" value="Título:"/>
+                <p:inputText id="title" value="#{submissionController.submission.title}" required="true"/>
 
-            <h:outputLabel for="description" value="Descrição:" />
-            <h:inputTextarea id="description" value="#{submissionController.submission.description}" />
+                <h:outputLabel for="name" value="Nome estudante:"/>
+                <p:inputText id="name" value="#{submissionController.submission.studentName}" required="true"/>
 
-            <h:outputLabel for="file" value="Arquivo:" />
-            <h:inputFile id="file" value="#{submissionController.file}" required="true" />
+                <h:outputLabel for="description" value="Descrição:"/>
+                <p:inputTextarea id="description" value="#{submissionController.submission.description}" required="true"/>
 
-            <h:outputLabel for="studentName" value="Nome do Estudante:" />
-            <h:inputText id="studentName" value="#{submissionController.submission.studentName}" required="true" />
-        </h:panelGrid>
+                <h:outputLabel for="fileUpload" value="Arquivo:"/>
+                <p:fileUpload id="fileUpload" value="#{submissionController.file}" mode="simple" required="true"/>
 
-        <p:commandButton value="Enviar Trabalho" action="#{submissionController.upload}" update="@form">
-            <f:ajax execute="@form" />
-        </p:commandButton>
+                <p:commandButton value="Enviar" action="#{submissionController.upload}" ajax="false"/>
+
+                <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true"/>
+            </h:panelGrid>
+        </p:panel>
     </h:form>
-
-    <h:messages />
 </h:body>
 </html>
