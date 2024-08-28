@@ -7,31 +7,33 @@
     <title>Visualizar Trabalhos</title>
 </h:head>
 <h:body>
-    <h:form id="submissions">
-        <p:dataTable value="#{submissionController.submissions}" var="submission" paginator="true" rows="10">
-            <p:column headerText="ID">
-                <h:outputText value="#{submission.id}" />
-            </p:column>
-            <p:column headerText="Título">
-                <h:outputText value="#{submission.title}" />
-            </p:column>
-            <p:column headerText="Descrição">
-                <h:outputText value="#{submission.description}" />
-            </p:column>
-            <p:column headerText="Nome do Estudante">
-                <h:outputText value="#{submission.studentName}" />
-            </p:column>
-            <p:column headerText="Data de Submissão">
-                <h:outputText value="#{submission.submissionDate}">
-                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
-                </h:outputText>
-            </p:column>
-            <p:column headerText="Ações">
-                <p:commandButton value="Excluir" action="#{submissionController.delete(submission.id)}" update=":submissions">
-                    <f:ajax execute="@this" />
-                </p:commandButton>
-            </p:column>
-        </p:dataTable>
+    <h:form>
+        <p:commandButton value="Home" action="index.xhtml?faces-redirect=true" style="margin-right: 20px;" />
+
+        <p:commandButton value="Enviar Novo Trabalho" action="submit_work.xhtml?faces-redirect=true"/>
+    </h:form>
+    <h:form id="viewForm">
+        <p:panel header="Trabalhos Enviados">
+            <p:dataTable value="#{submissionController.submissions}" var="submission" paginator="true" rows="10">
+                <p:column headerText="Título" style="width: 5%;">
+                    <h:outputText value="#{submission.title}" />
+                </p:column>
+                <p:column headerText="Descrição" style="width: 25%;">
+                    <h:outputText value="#{submission.description}" />
+                </p:column>
+                <p:column headerText="Nome do Estudante" style="width: 10%;">
+                    <h:outputText value="#{submission.studentName}" />
+                </p:column>
+                <p:column headerText="Data de Submissão" style="width: 10%;">
+                    <h:outputText value="#{submission.submissionDate}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Documento" style="width: 15%;">
+                    <h:commandLink value="#{submission.fileName}" action="#{submissionController.download(submission.id)}" />
+                </p:column>
+            </p:dataTable>
+        </p:panel>
     </h:form>
 
     <h:messages />

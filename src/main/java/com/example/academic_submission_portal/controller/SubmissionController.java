@@ -23,22 +23,52 @@ public class SubmissionController implements Serializable {
     @Autowired
     private SubmissionRepository submissionRepository;
 
-    private Submission submission = new Submission();
+    private Submission submission;
     private List<Submission> submissions;
     private UploadedFile file;
 
+    @PostConstruct
+    public void init() {
+        submissions = submissionRepository.findAll();
+        submission = new Submission();
+    }
+
     public void upload() {
-        if (file != null) {
-            submission.setFileData(file.getContent());
-            submission.setFileName(file.getFileName());
-            submission.setSubmissionDate(new Date());
-            submissionRepository.save(submission);
-            submissions = submissionRepository.findAll();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Trabalho enviado com sucesso"));
-            submission = new Submission();
-            file = null;
+        if (file != null && file.getContent() != null && file.getContent().length > 0) {
+            try {
+                submission.setFileData(file.getContent());
+                submission.setFileName(file.getFileName());
+                submission.setSubmissionDate(new Date());
+                submissionRepository.save(submission);
+
+                submissions = submissionRepository.findAll();
+
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Trabalho enviado com sucesso"));
+
+                submission = new Submission();
+                file = null;
+            } catch (Exception e) {
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro ao salvar o trabalho: " + e.getMessage(), null));
+            }
         } else {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Por favor, selecione um arquivo", null));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Por favor, selecione um arquivo válido", null));
+        }
+    }
+
+    public void download(Long submissionId) {
+        Submission submissionToDownload = submissionRepository.findById(submissionId).orElse(null);
+        if (submissionToDownload != null && submissionToDownload.getFileData() != null) {
+            FacesContext facesContext = FacesContext.getCurrentInstance();
+            facesContext.getExternalContext().setResponseContentType("application/octet-stream");
+            facesContext.getExternalContext().setResponseHeader("Content-Disposition", "attachment;filename=\"" + submissionToDownload.getFileName() + "\"");
+            try {
+                facesContext.getExternalContext().getResponseOutputStream().write(submissionToDownload.getFileData());
+                facesContext.responseComplete();
+            } catch (Exception e) {
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro ao fazer download do arquivo: " + e.getMessage(), null));
+            }
+        } else {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Arquivo não encontrado para download", null));
         }
     }
 
