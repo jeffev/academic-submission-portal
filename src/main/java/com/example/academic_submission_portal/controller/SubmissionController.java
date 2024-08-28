@@ -1,5 +1,7 @@
 package com.example.academic_submission_portal.controller;
 
+import com.example.academic_submission_portal.exception.SubmissionNotFoundException;
+import com.example.academic_submission_portal.exception.ValidationException;
 import com.example.academic_submission_portal.model.Submission;
 import com.example.academic_submission_portal.service.SubmissionService;
 import jakarta.annotation.PostConstruct;
@@ -36,8 +38,12 @@ public class SubmissionController implements Serializable {
 
     public void saveEvaluation() {
         if (selectedSubmission != null) {
-            submissionService.save(selectedSubmission);
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Avaliação salva com sucesso!"));
+            try {
+                submissionService.save(selectedSubmission);
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Avaliação salva com sucesso!"));
+            } catch (ValidationException e) {
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), null));
+            }
         }
     }
 
@@ -55,6 +61,8 @@ public class SubmissionController implements Serializable {
 
                 submission = new Submission();
                 file = null;
+            } catch (ValidationException e) {
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), null));
             } catch (Exception e) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro ao salvar o trabalho: " + e.getMessage(), null));
             }
@@ -64,19 +72,23 @@ public class SubmissionController implements Serializable {
     }
 
     public void download(Long submissionId) {
-        findSubmissionById(submissionId);
-        if (selectedSubmission != null && selectedSubmission.getFileData() != null) {
-            FacesContext facesContext = FacesContext.getCurrentInstance();
-            facesContext.getExternalContext().setResponseContentType("application/octet-stream");
-            facesContext.getExternalContext().setResponseHeader("Content-Disposition", "attachment;filename=\"" + selectedSubmission.getFileName() + "\"");
-            try {
-                facesContext.getExternalContext().getResponseOutputStream().write(selectedSubmission.getFileData());
-                facesContext.responseComplete();
-            } catch (Exception e) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro ao fazer download do arquivo: " + e.getMessage(), null));
+        try {
+            findSubmissionById(submissionId);
+            if (selectedSubmission != null && selectedSubmission.getFileData() != null) {
+                FacesContext facesContext = FacesContext.getCurrentInstance();
+                facesContext.getExternalContext().setResponseContentType("application/octet-stream");
+                facesContext.getExternalContext().setResponseHeader("Content-Disposition", "attachment;filename=\"" + selectedSubmission.getFileName() + "\"");
+                try {
+                    facesContext.getExternalContext().getResponseOutputStream().write(selectedSubmission.getFileData());
+                    facesContext.responseComplete();
+                } catch (Exception e) {
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro ao fazer download do arquivo: " + e.getMessage(), null));
+                }
+            } else {
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Arquivo não encontrado para download", null));
             }
-        } else {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Arquivo não encontrado para download", null));
+        } catch (SubmissionNotFoundException e) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), null));
         }
     }
 
@@ -85,9 +97,11 @@ public class SubmissionController implements Serializable {
     }
 
     public void findSubmissionById(Long id) {
-        selectedSubmission = submissionService.findById(id).orElse(null);
-        if (selectedSubmission == null) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Submission not found!", null));
+        try {
+            selectedSubmission = submissionService.findByIdOrThrow(id);
+        } catch (SubmissionNotFoundException e) {
+            selectedSubmission = null; // Resetting to avoid null pointer in other methods
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), null));
         }
     }
 
