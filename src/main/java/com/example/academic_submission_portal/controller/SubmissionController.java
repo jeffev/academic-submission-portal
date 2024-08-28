@@ -2,6 +2,7 @@ package com.example.academic_submission_portal.controller;
 
 import com.example.academic_submission_portal.model.Submission;
 import com.example.academic_submission_portal.repository.SubmissionRepository;
+import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
@@ -25,10 +26,6 @@ public class SubmissionController implements Serializable {
     private Submission submission = new Submission();
     private List<Submission> submissions;
     private UploadedFile file;
-
-    public SubmissionController() {
-        //submissions = submissionRepository.findAll();
-    }
 
     public void upload() {
         if (file != null) {
@@ -56,6 +53,9 @@ public class SubmissionController implements Serializable {
     }
 
     public List<Submission> getSubmissions() {
+        if (submissions == null) {
+            submissions = submissionRepository.findAll();
+        }
         return submissions;
     }
 
