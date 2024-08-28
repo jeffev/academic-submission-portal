@@ -1,7 +1,7 @@
 package com.example.academic_submission_portal.controller;
 
 import com.example.academic_submission_portal.model.Submission;
-import com.example.academic_submission_portal.repository.SubmissionRepository;
+import com.example.academic_submission_portal.service.SubmissionService;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -21,7 +21,7 @@ public class SubmissionController implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Autowired
-    private SubmissionRepository submissionRepository;
+    private SubmissionService submissionService;
 
     private Submission submission;
     private Submission selectedSubmission;
@@ -30,15 +30,14 @@ public class SubmissionController implements Serializable {
 
     @PostConstruct
     public void init() {
-        submissions = submissionRepository.findAll();
+        loadSubmissions();
         submission = new Submission();
     }
 
     public void saveEvaluation() {
         if (selectedSubmission != null) {
-            submissionRepository.save(selectedSubmission);
+            submissionService.save(selectedSubmission);
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Avaliação salva com sucesso!"));
-            submissions = submissionRepository.findAll();
         }
     }
 
@@ -48,9 +47,9 @@ public class SubmissionController implements Serializable {
                 submission.setFileData(file.getContent());
                 submission.setFileName(file.getFileName());
                 submission.setSubmissionDate(new Date());
-                submissionRepository.save(submission);
+                submissionService.save(submission);
 
-                submissions = submissionRepository.findAll();
+                submissions.add(submission);
 
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Trabalho enviado com sucesso"));
 
@@ -65,19 +64,30 @@ public class SubmissionController implements Serializable {
     }
 
     public void download(Long submissionId) {
-        Submission submissionToDownload = submissionRepository.findById(submissionId).orElse(null);
-        if (submissionToDownload != null && submissionToDownload.getFileData() != null) {
+        findSubmissionById(submissionId);
+        if (selectedSubmission != null && selectedSubmission.getFileData() != null) {
             FacesContext facesContext = FacesContext.getCurrentInstance();
             facesContext.getExternalContext().setResponseContentType("application/octet-stream");
-            facesContext.getExternalContext().setResponseHeader("Content-Disposition", "attachment;filename=\"" + submissionToDownload.getFileName() + "\"");
+            facesContext.getExternalContext().setResponseHeader("Content-Disposition", "attachment;filename=\"" + selectedSubmission.getFileName() + "\"");
             try {
-                facesContext.getExternalContext().getResponseOutputStream().write(submissionToDownload.getFileData());
+                facesContext.getExternalContext().getResponseOutputStream().write(selectedSubmission.getFileData());
                 facesContext.responseComplete();
             } catch (Exception e) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro ao fazer download do arquivo: " + e.getMessage(), null));
             }
         } else {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Arquivo não encontrado para download", null));
+        }
+    }
+
+    public void loadSubmissions() {
+        submissions = submissionService.findAll();
+    }
+
+    public void findSubmissionById(Long id) {
+        selectedSubmission = submissionService.findById(id).orElse(null);
+        if (selectedSubmission == null) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Submission not found!", null));
         }
     }
 
@@ -100,9 +110,6 @@ public class SubmissionController implements Serializable {
     }
 
     public List<Submission> getSubmissions() {
-        if (submissions == null) {
-            submissions = submissionRepository.findAll();
-        }
         return submissions;
     }
 
