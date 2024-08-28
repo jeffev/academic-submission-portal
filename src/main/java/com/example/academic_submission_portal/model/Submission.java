@@ -2,6 +2,7 @@ package com.example.academic_submission_portal.model;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
@@ -31,6 +32,12 @@ public class Submission {
 
     @Column(name = "student_name", nullable = false)
     private String studentName;
+
+    @Column(name = "feedback")
+    private String feedback;
+
+    @Column(precision = 3, scale = 1)
+    private BigDecimal rating;
 
     // Getters e Setters
 
@@ -89,4 +96,21 @@ public class Submission {
     public void setStudentName(String studentName) {
         this.studentName = studentName;
     }
+
+    public String getFeedback() {
+        return feedback;
+    }
+
+    public void setFeedback(String feedback) {
+        this.feedback = feedback;
+    }
+
+    public BigDecimal getRating() {
+        return rating;
+    }
+
+    public void setRating(BigDecimal rating) {
+        this.rating = rating;
+    }
+
 }

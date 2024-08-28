@@ -3,9 +3,9 @@ package com.example.academic_submission_portal.controller;
 import com.example.academic_submission_portal.model.Submission;
 import com.example.academic_submission_portal.repository.SubmissionRepository;
 import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 import org.primefaces.model.file.UploadedFile;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.List;
 
 @Named
-@ViewScoped
+@SessionScoped
 public class SubmissionController implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -24,6 +24,7 @@ public class SubmissionController implements Serializable {
     private SubmissionRepository submissionRepository;
 
     private Submission submission;
+    private Submission selectedSubmission;
     private List<Submission> submissions;
     private UploadedFile file;
 
@@ -31,6 +32,14 @@ public class SubmissionController implements Serializable {
     public void init() {
         submissions = submissionRepository.findAll();
         submission = new Submission();
+    }
+
+    public void saveEvaluation() {
+        if (selectedSubmission != null) {
+            submissionRepository.save(selectedSubmission);
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Avaliação salva com sucesso!"));
+            submissions = submissionRepository.findAll();
+        }
     }
 
     public void upload() {
@@ -80,6 +89,14 @@ public class SubmissionController implements Serializable {
 
     public void setSubmission(Submission submission) {
         this.submission = submission;
+    }
+
+    public Submission getSelectedSubmission() {
+        return selectedSubmission;
+    }
+
+    public void setSelectedSubmission(Submission selectedSubmission) {
+        this.selectedSubmission = selectedSubmission;
     }
 
     public List<Submission> getSubmissions() {

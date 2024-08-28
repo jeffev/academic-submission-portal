@@ -18,7 +18,7 @@
                 <p:column headerText="Título" style="width: 5%;">
                     <h:outputText value="#{submission.title}" />
                 </p:column>
-                <p:column headerText="Descrição" style="width: 25%;">
+                <p:column headerText="Descrição">
                     <h:outputText value="#{submission.description}" />
                 </p:column>
                 <p:column headerText="Nome do Estudante" style="width: 10%;">
@@ -29,8 +29,16 @@
                         <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
                     </h:outputText>
                 </p:column>
+                <p:column headerText="Nota" style="width: 5%;">
+                    <h:outputText value="#{submission.rating}" />
+                </p:column>
                 <p:column headerText="Documento" style="width: 15%;">
                     <h:commandLink value="#{submission.fileName}" action="#{submissionController.download(submission.id)}" />
+                </p:column>
+                <p:column headerText="Ações" style="width: 8%;">
+                    <p:commandButton value="Avaliar" action="evaluate_submission.xhtml?faces-redirect=true">
+                        <f:setPropertyActionListener value="#{submission}" target="#{submissionController.selectedSubmission}" />
+                    </p:commandButton>
                 </p:column>
             </p:dataTable>
         </p:panel>

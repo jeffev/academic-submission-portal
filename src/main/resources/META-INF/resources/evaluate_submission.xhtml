@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>Avaliar Trabalho</title>
+</h:head>
+<h:body>
+    <h:form>
+        <p:commandButton value="Home" action="index.xhtml?faces-redirect=true" style="margin-right: 20px;" />
+
+        <p:commandButton value="Ver Trabalhos Enviados" action="view_submissions.xhtml?faces-redirect=true"/>
+    </h:form>
+    <h:form>
+        <p:panel header="Avaliar Trabalho">
+            <p:panelGrid columns="2" columnClasses="ui-grid-col-2,ui-grid-col-8"
+                         layout="grid"
+                         styleClass="ui-panelgrid-blank ui-fluid"
+                         style="border:0px none; background-color:transparent;">
+                <h:outputLabel value="Título:" />
+                <h:outputText value="#{submissionController.selectedSubmission.title}" />
+
+                <h:outputLabel value="Nome do Estudante:" />
+                <h:outputText value="#{submissionController.selectedSubmission.studentName}" />
+
+                <h:outputLabel value="Feedback:" />
+                <p:inputTextarea value="#{submissionController.selectedSubmission.feedback}" rows="5" cols="30" required="true" />
+
+                <h:outputLabel value="Nota:" />
+                <p:inputText id="rating" value="#{submissionController.selectedSubmission.rating}"
+                             minValue="0.0" maxValue="9.9"
+                             decimalPlaces="1" required="true" />
+
+                <h:outputLabel value="" />
+                <p:message for="rating" id="notaMessage" />
+
+                <h:outputLabel />
+                <p:commandButton value="Salvar Avaliação" actionListener="#{submissionController.saveEvaluation}" update="@form" />
+            </p:panelGrid>
+
+            <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true"/>
+        </p:panel>
+    </h:form>
+</h:body>
+</html>

@@ -29,10 +29,11 @@
                 <p:outputLabel for="file" value="Arquivo:" />
                 <p:fileUpload id="file" value="#{submissionController.file}" mode="simple" />
 
+                <h:outputLabel />
                 <p:commandButton value="Enviar" action="#{submissionController.upload}" update="@form" />
-
-                <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true"/>
             </p:panelGrid>
+
+            <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true"/>
         </p:panel>
     </h:form>
 
