@@ -100,7 +100,7 @@ public class SubmissionController implements Serializable {
         try {
             selectedSubmission = submissionService.findByIdOrThrow(id);
         } catch (SubmissionNotFoundException e) {
-            selectedSubmission = null; // Resetting to avoid null pointer in other methods
+            selectedSubmission = null;
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), null));
         }
     }

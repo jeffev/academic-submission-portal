@@ -1,7 +1,7 @@
 package com.example.academic_submission_portal.service;
 
 import com.example.academic_submission_portal.exception.SubmissionNotFoundException;
-import com.example.academic_submission_portal.exception.ValidationException; // Supondo que você criou essa exceção
+import com.example.academic_submission_portal.exception.ValidationException;
 import com.example.academic_submission_portal.model.Submission;
 import com.example.academic_submission_portal.repository.SubmissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 @Service
 public class SubmissionService {
@@ -29,7 +28,7 @@ public class SubmissionService {
 
     public Submission findByIdOrThrow(Long id) {
         return submissionRepository.findById(id)
-                .orElseThrow(() -> new SubmissionNotFoundException("Submission not found with id: " + id));
+                .orElseThrow(() -> new SubmissionNotFoundException("Envio não encontrado com o id: " + id));
     }
 
     public Submission save(Submission submission) {
@@ -39,7 +38,7 @@ public class SubmissionService {
 
     public Submission update(Submission submission) {
         if (!submissionRepository.existsById(submission.getId())) {
-            throw new SubmissionNotFoundException("Submission not found with id: " + submission.getId());
+            throw new SubmissionNotFoundException("Envio não encontrado com o id: " + submission.getId());
         }
         validateSubmission(submission);
         return submissionRepository.save(submission);
@@ -47,7 +46,7 @@ public class SubmissionService {
 
     public void delete(Long id) {
         if (!submissionRepository.existsById(id)) {
-            throw new SubmissionNotFoundException("Submission not found with id: " + id);
+            throw new SubmissionNotFoundException("Envio não encontrado com o id: " + id);
         }
         submissionRepository.deleteById(id);
     }
