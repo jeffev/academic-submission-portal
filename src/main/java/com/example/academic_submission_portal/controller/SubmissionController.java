@@ -39,7 +39,7 @@ public class SubmissionController implements Serializable {
     public void saveEvaluation() {
         if (selectedSubmission != null) {
             try {
-                submissionService.save(selectedSubmission);
+                submissionService.update(selectedSubmission);
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Avaliação salva com sucesso!"));
             } catch (ValidationException e) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), null));

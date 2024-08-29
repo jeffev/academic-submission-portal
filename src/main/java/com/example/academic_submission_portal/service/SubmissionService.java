@@ -32,7 +32,7 @@ public class SubmissionService {
     }
 
     public Submission save(Submission submission) {
-        validateSubmission(submission);
+        validateSubmission(submission, null);
         return submissionRepository.save(submission);
     }
 
@@ -40,7 +40,7 @@ public class SubmissionService {
         if (!submissionRepository.existsById(submission.getId())) {
             throw new SubmissionNotFoundException("Envio não encontrado com o id: " + submission.getId());
         }
-        validateSubmission(submission);
+        validateSubmission(submission, submission.getId());
         return submissionRepository.save(submission);
     }
 
@@ -51,7 +51,7 @@ public class SubmissionService {
         submissionRepository.deleteById(id);
     }
 
-    private void validateSubmission(Submission submission) {
+    private void validateSubmission(Submission submission, Long existingId) {
         if (submission.getTitle() == null || submission.getTitle().trim().isEmpty()) {
             throw new ValidationException("O título é obrigatório.");
         }
@@ -66,13 +66,14 @@ public class SubmissionService {
         if (!isAllowedFileType(submission.getFileName())) {
             throw new ValidationException("Tipo de arquivo não suportado.");
         }
-
-        if (submissionRepository.existsByTitleAndStudentName(submission.getTitle(), submission.getStudentName())) {
-            throw new ValidationException("Uma submissão com este título já foi feita por este estudante.");
+        if (existingId == null) {
+            if (submissionRepository.existsByTitleAndStudentName(submission.getTitle(), submission.getStudentName())) {
+                throw new ValidationException("Uma submissão com este título já foi feita por este estudante.");
+            }
         }
     }
 
-    private boolean isAllowedFileType(String fileName) {
+    public boolean isAllowedFileType(String fileName) {
         if (fileName == null || fileName.trim().isEmpty()) {
             return false;
         }
