@@ -7,11 +7,18 @@ Este projeto é um **Portal de Submissão de Trabalhos Acadêmicos** desenvolvid
 - **Spring Boot**: Framework para simplificação da configuração e desenvolvimento de aplicações Java.
 - **Hibernate**: Implementação de JPA para gerenciamento de persistência.
 - **PostgreSQL**: Banco de dados relacional para armazenamento dos dados.
-- **PrimeFaces**: Biblioteca de componentes UI para JSF.
+- **JoinFaces**: Biblioteca para integração de JSF com Spring Boot.
+- **Mockito**: Framework para testes de unidade em Java.
+- **JUnit**: Framework para testes automatizados em Java.
 
 ## Funcionalidades Implementadas
 
 - **Envio de Trabalhos Acadêmicos**: Permite aos alunos enviar trabalhos acadêmicos, incluindo título, descrição e arquivo.
+- **Lista de Trabalhos**: Exibe uma lista de todos os trabalhos enviados pelos alunos.
+- **Download de Arquivos**: Permite o download dos arquivos dos trabalhos acadêmicos.
+- **Avaliação dos Trabalhos**: Permite aos professores avaliar os trabalhos acadêmicos enviados.
+
+Aqui está a seção atualizada com a adição da etapa para executar os testes:
 
 ## Configuração do Projeto
 
@@ -46,7 +53,15 @@ Certifique-se de ter o Maven instalado. Execute o seguinte comando para construi
 mvn clean package
 ```
 
-### 4. **Executando a Aplicação**
+### 4. **Executando os Testes**
+
+Para garantir que os testes estejam passando, execute o comando Maven para rodar os testes:
+
+```bash
+mvn test
+```
+
+### 5. **Executando a Aplicação**
 
 Execute a aplicação Spring Boot usando o comando Maven:
 
@@ -54,12 +69,12 @@ Execute a aplicação Spring Boot usando o comando Maven:
 mvn spring-boot:run
 ```
 
-### 5. **Acessando a Aplicação**
+### 6. **Acessando a Aplicação**
 
 Abra um navegador e acesse:
 
 ```
-http://localhost:8080/submission
+http://localhost:8080/index.xhtml
 ```
 
 Você verá o formulário para envio de trabalhos acadêmicos.
@@ -72,8 +87,7 @@ Você verá o formulário para envio de trabalhos acadêmicos.
   - **`repository`**: Repositórios para acesso aos dados.
 - **`src/main/resources`**: Contém recursos da aplicação.
   - **`application.properties`**: Configurações do Spring Boot e Hibernate.
-  - **`templates`**: Contém arquivos XHTML para renderização de páginas JSF.
-  - **`static`**: Arquivos estáticos como CSS e JS.
+  - **`META_INF/resources`**: Contém arquivos XHTML para renderização de páginas JSF.
 
 ## Contribuindo
 
