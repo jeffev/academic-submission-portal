@@ -18,8 +18,6 @@ Este projeto é um **Portal de Submissão de Trabalhos Acadêmicos** desenvolvid
 - **Download de Arquivos**: Permite o download dos arquivos dos trabalhos acadêmicos.
 - **Avaliação dos Trabalhos**: Permite aos professores avaliar os trabalhos acadêmicos enviados.
 
-Aqui está a seção atualizada com a adição da etapa para executar os testes:
-
 ## Configuração do Projeto
 
 ### 1. **Clonando o Repositório**
